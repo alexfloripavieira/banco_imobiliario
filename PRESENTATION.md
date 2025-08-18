@@ -164,6 +164,47 @@ curl -s -X POST http://localhost:8080/jogo/simular \
   -d '{"n":1000, "seed":123}'
 ```
 
+Para apresentação / demonstração ao público (guia para leigos)
+---------------------------------------------------------------
 
----
-(Documento gerado automaticamente)
+Se você quiser demonstrar a aplicação para uma pessoa leiga, siga estes
+passos simples e rápidos:
+
+1) Preparar o ambiente (uma vez):
+
+```bash
+sudo apt update
+sudo apt install -y pkg-config libcairo2-dev libgirepository1.0-dev python3-dev build-essential
+make install
+```
+
+2) Iniciar a API:
+
+```bash
+make run
+```
+
+3) Demonstrar simulação individual:
+
+ - Abra `http://127.0.0.1:8080/` no navegador, defina `n=1` e (opcional) `seed`.
+ - Clique em Simular. Resultado em JSON aparecerá formatado na página.
+
+4) Demonstrar simulação em lote:
+
+ - No navegador, defina `n=1000` e `seed=123`, clique em Simular (ou envie POST com `Accept: text/html`).
+ - A página exibirá uma tabela com as vitórias por estratégia e percentuais.
+
+5) Alternativa rápida via terminal:
+
+```bash
+# resumo no terminal (CLI)
+make simulate N=10 SEED=42
+
+# JSON agregado
+curl -s -X POST http://127.0.0.1:8080/jogo/simular -H "Content-Type: application/json" -d '{"n":1000, "seed":123}' | jq
+
+# HTML legível (salve e abra)
+curl -s -X POST http://127.0.0.1:8080/jogo/simular -H "Content-Type: application/json" -H "Accept: text/html" -d '{"n":1000, "seed":123}' -o result.html
+xdg-open result.html
+```
+

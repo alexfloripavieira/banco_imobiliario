@@ -88,7 +88,12 @@ def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
 
     if n == 1:
         r = results[0]
-        return {'vencedor': r['winner'], 'jogadores': r['ranking'], 'rodadas': r['rounds']}
+        return {
+            'vencedor': r['winner'],
+            'jogadores': r['ranking'],
+            'rodadas': r['rounds'],
+            'rodadas_str': f"{r['rounds']} rodadas",
+        }
 
     # aggregate
     wins: Dict[str, int] = {k: 0 for k in STRATEGIES.keys()}
@@ -99,6 +104,7 @@ def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
 
     percentages = {k: (wins[k] / n) * 100 for k in wins}
     avg_rounds = total_rounds / n if n else 0
+    media_rodadas_str = f"{avg_rounds:.3f} rodadas"
 
     return {
         'simulacoes': n,
@@ -106,6 +112,7 @@ def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
         'vitorias': wins,
         'percentuais': percentages,
         'media_rodadas': avg_rounds,
+        'media_rodadas_str': media_rodadas_str,
     }
 
 

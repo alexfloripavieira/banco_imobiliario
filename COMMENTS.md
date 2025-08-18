@@ -6,76 +6,85 @@ Requisitos:
 
 Executar localmente:
 
-1. Instale dependências
+# Como rodar o simulador (guia simples)
 
-```bash
-pip install -r requirements.txt
-```
+Este arquivo mostra os passos mínimos para executar o projeto no seu computador, sem termos técnicos difíceis.
 
-2. Rode a aplicação
+Resumo rápido
+- Use o Makefile para preparar o ambiente e rodar.
+- A API fica em: http://127.0.0.1:8080/
+- Tudo funciona sem sudo (sem privilégios de administrador).
 
-```bash
-python main.py
-```
+Passo a passo
 
-3. Acesse o endpoint
-
-GET http://localhost:8080/jogo/simular
-
-Resposta de exemplo:
-
-{
-    "vencedor": "cauteloso",
-    "jogadores": ["cauteloso", "aleatorio", "exigente", "impulsivo"]
-}
-
-Exemplos com curl
-
-Simulação única (padrão) — enviar no body (JSON):
-
-```bash
-curl -s -X POST http://localhost:8080/jogo/simular \
-  -H "Content-Type: application/json" \
-  -d '{"n":1}'
-```
-
-Simulação em lote (1000 execuções) com seed reprodutível — enviar no body (JSON):
-
-```bash
-curl -s -X POST http://localhost:8080/jogo/simular \
-  -H "Content-Type: application/json" \
-  -d '{"n":1000, "seed":123}'
-```
-
-Simulações em lote e seed
-
-- É possível executar múltiplas simulações e obter estatísticas usando query params `n` e `seed`.
-- Exemplo: `GET /jogo/simular?n=1000&seed=123` retornará número de simulações, contagem de vitórias por estratégia, percentuais e média de rodadas.
-
-Resposta de exemplo (n>1):
-{
-  "simulacoes": 1000,
-  "seed": 123,
-  "vitorias": {"impulsivo": 200, "exigente": 250, "cauteloso": 350, "aleatorio": 200},
-  "percentuais": {"impulsivo": 20.0, "exigente": 25.0, "cauteloso": 35.0, "aleatorio": 20.0},
-  "media_rodadas": 312.4
-}
-
-Comandos úteis com Makefile
-
-Para facilitar, há um `Makefile` com alvos úteis:
-
-- `make install` — instala dependências listadas em `requirements.txt`.
-- `make test` — executa a suíte de testes (pytest).
-- `make lint` — executa `flake8` (pode falhar se não instalado).
-- `make typecheck` — executa `mypy` (pode falhar se não instalado).
-- `make run` — executa `python3 main.py`.
-- `make uvicorn` — executa o servidor uvicorn.
-
-Exemplo rápido:
+1) Preparar o projeto (uma vez)
+Abra um terminal na pasta do projeto e rode:
 
 ```bash
 make install
-make test
+```
+
+Isso cria um ambiente local e instala as dependências só para este projeto.
+
+2) Iniciar a aplicação (server)
+No terminal, rode:
+
+```bash
 make run
 ```
+
+Deixe esse terminal aberto enquanto testa pelo navegador ou curl.
+
+3) Testar uma simulação simples (uma execução)
+
+- Pelo navegador: abra http://127.0.0.1:8080/ e coloque `n=1` (seed é opcional). Clique em Simular.
+- Pelo terminal (curl, mostra JSON formatado):
+
+```bash
+curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"n":1,"seed":42}' http://127.0.0.1:8080/jogo/simular | python -m json.tool
+```
+
+4) Testar simulação em lote (várias execuções)
+
+- Pelo terminal (JSON agregado):
+
+```bash
+curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"n":10,"seed":42}' http://127.0.0.1:8080/jogo/simular | python -m json.tool
+```
+
+- Para ver uma versão legível em HTML no navegador (salva e abre automaticamente):
+
+```bash
+curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: text/html' \
+  -d '{"n":10,"seed":42}' http://127.0.0.1:8080/jogo/simular -o /tmp/sim_result.html && xdg-open /tmp/sim_result.html >/dev/null 2>&1 &
+```
+
+5) Rodar via linha de comando (script local)
+
+Também existe um atalho para rodar localmente sem HTTP:
+
+```bash
+make simulate N=1 SEED=42
+# ou para lote
+make simulate N=1000 SEED=123
+```
+
+6) Rodar os testes
+
+```bash
+make test
+```
+
+Dicas e observações
+- Não é necessário usar sudo em nenhum dos comandos acima.
+- Se preferir ver JSON bonito no terminal sem instalar nada extra, usamos `python -m json.tool` (já no exemplo).
+- Se o navegador não abrir com `xdg-open`, salve o arquivo HTML e abra manualmente.
+
+Problemas comuns (e soluções simples)
+- Se o servidor não inicia porque a porta está em uso, pare a outra instância (procure por `python`/`uvicorn`) ou reinicie a máquina.
+- Se receber erro dizendo que falta um módulo Python, assegure-se de ter rodado `make install` e de usar o `make run`.
+
+Se quiser, eu adiciono no `Makefile` alvos que executam os `curl` acima e abrem automaticamente no navegador (`make open-single`, `make open-batch`).
+  ```
