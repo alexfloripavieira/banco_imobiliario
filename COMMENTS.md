@@ -6,7 +6,7 @@ Requisitos:
 
 Executar localmente:
 
-# Como rodar o simulador (guia simples)
+# Como rodar o simulador
 
 Este arquivo mostra os passos mínimos para executar o projeto no seu computador, sem termos técnicos difíceis.
 
@@ -76,15 +76,3 @@ make simulate N=1000 SEED=123
 ```bash
 make test
 ```
-
-Dicas e observações
-- Não é necessário usar sudo em nenhum dos comandos acima.
-- Se preferir ver JSON bonito no terminal sem instalar nada extra, usamos `python -m json.tool` (já no exemplo).
-- Se o navegador não abrir com `xdg-open`, salve o arquivo HTML e abra manualmente.
-
-Problemas comuns (e soluções simples)
-- Se o servidor não inicia porque a porta está em uso, pare a outra instância (procure por `python`/`uvicorn`) ou reinicie a máquina.
-- Se receber erro dizendo que falta um módulo Python, assegure-se de ter rodado `make install` e de usar o `make run`.
-
-Se quiser, eu adiciono no `Makefile` alvos que executam os `curl` acima e abrem automaticamente no navegador (`make open-single`, `make open-batch`).
-  ```

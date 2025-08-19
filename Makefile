@@ -1,6 +1,6 @@
 # Simple Makefile to run common tasks
 
-.PHONY: help venv install test lint typecheck run uvicorn
+.PHONY: help venv install test lint typecheck run uvicorn simulate down
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -42,6 +42,13 @@ run: install
 uvicorn:
 	@echo "Starting uvicorn server"
 	$(PY) -m uvicorn main:app --host 0.0.0.0 --port 8080
+
+down:
+	@echo "Stopping application processes (uvicorn / main.py) and freeing port 8080..."
+	-@pkill -f uvicorn || true
+	-@pkill -f 'main.py' || true
+	-@fuser -k 8080/tcp >/dev/null 2>&1 || true
+	@echo "Stopped."
 
 simulate:
 	@echo "Running simulation via scripts/run_simulation.py"
