@@ -2,6 +2,7 @@
 
 import random
 from typing import Callable, Dict
+
 from ..domain.models import Player, Property
 
 
@@ -26,8 +27,8 @@ def random_strategy(player: Player, prop: Property) -> bool:
 
 
 STRATEGIES: Dict[str, Callable[[Player, Property], bool]] = {
-    'impulsivo': impulsive_strategy,
-    'exigente': demanding_strategy,
-    'cauteloso': cautious_strategy,
-    'aleatorio': random_strategy,
+    "impulsivo": impulsive_strategy,
+    "exigente": demanding_strategy,
+    "cauteloso": cautious_strategy,
+    "aleatorio": random_strategy,
 }

@@ -1,8 +1,9 @@
 """Domain models: Player and Property."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import List, Optional
 
 
 @dataclass
@@ -10,7 +11,7 @@ class Property:
     position: int
     price: int
     rent: int
-    owner: Optional['Player'] = None
+    owner: Optional["Player"] = None
 
 
 @dataclass

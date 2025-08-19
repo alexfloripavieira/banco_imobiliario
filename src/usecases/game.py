@@ -2,9 +2,10 @@
 
 import random
 from random import Random
-from typing import List, Tuple, Optional, Dict, Any
-from ..domain.models import Player, Property
+from typing import Any, Dict, List, Optional, Tuple
+
 from ..adapters.strategies import STRATEGIES
+from ..domain.models import Player, Property
 
 
 class Game:
@@ -15,11 +16,10 @@ class Game:
         self.rng = rng or random.Random()
 
     def setup(self):
-        # create 20 properties: price 100..(100+19*10), rent 10..(10+19*5) as example
         self.board = [Property(pos, 100 + pos * 10, 10 + pos * 5) for pos in range(20)]
 
     def create_players(self):
-        order = ['impulsivo', 'exigente', 'cauteloso', 'aleatorio']
+        order = ["impulsivo", "exigente", "cauteloso", "aleatorio"]
         self.rng.shuffle(order)
         self.players = [Player(name=s, strategy=s) for s in order]
 
@@ -56,12 +56,10 @@ class Game:
                 if len(self.active_players()) == 1:
                     break
 
-        # determine winner
         active = self.active_players()
         if len(active) == 1:
             winner = active[0]
         else:
-            # timeout: winner is highest balance, tie-break by turn order
             sorted_players = sorted(self.players, key=lambda p: p.balance, reverse=True)
             winner = sorted_players[0]
 
@@ -79,43 +77,40 @@ def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
     base_rng = random.Random(seed)
     results = []
     for _ in range(n):
-        # generate a per-game RNG to keep runs reproducible
-        s = base_rng.randint(0, 2 ** 32 - 1)
+        s = base_rng.randint(0, 2**32 - 1)
         seeds.append(s)
         g = Game(rng=random.Random(s))
         winner, ranking, rounds = g.simulate()
-        results.append({'winner': winner, 'ranking': ranking, 'rounds': rounds})
+        results.append({"winner": winner, "ranking": ranking, "rounds": rounds})
 
     if n == 1:
         r = results[0]
         return {
-            'vencedor': r['winner'],
-            'jogadores': r['ranking'],
-            'rodadas': r['rounds'],
-            'rodadas_str': f"{r['rounds']} rodadas",
+            "vencedor": r["winner"],
+            "jogadores": r["ranking"],
+            "rodadas": r["rounds"],
+            "rodadas_str": f"{r['rounds']} rodadas",
         }
 
-    # aggregate
     wins: Dict[str, int] = {k: 0 for k in STRATEGIES.keys()}
     total_rounds = 0
     for r in results:
-        wins[r['winner']] = wins.get(r['winner'], 0) + 1
-        total_rounds += r['rounds']
+        wins[r["winner"]] = wins.get(r["winner"], 0) + 1
+        total_rounds += r["rounds"]
 
     percentages = {k: (wins[k] / n) * 100 for k in wins}
     avg_rounds = total_rounds / n if n else 0
     media_rodadas_str = f"{avg_rounds:.3f} rodadas"
 
     return {
-        'simulacoes': n,
-        'seed': seed,
-        'vitorias': wins,
-        'percentuais': percentages,
-        'media_rodadas': avg_rounds,
-        'media_rodadas_str': media_rodadas_str,
+        "simulacoes": n,
+        "seed": seed,
+        "vitorias": wins,
+        "percentuais": percentages,
+        "media_rodadas": avg_rounds,
+        "media_rodadas_str": media_rodadas_str,
     }
 
 
 def simulate_game() -> dict:
-    # backward compatible single-run
     return simulate_games(1, None)
