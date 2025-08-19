@@ -13,7 +13,7 @@ um resumo com vitórias, percentuais e média de rodadas.
 
   ```bash
   curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-    -d '{"n":1,"seed":42}' http://127.0.0.1:8080/jogo/simular | python -m json.tool
+    -d '{"n":1,"seed":42}' http://127.0.0.1:8080/jogo/simular | python3 -m json.tool
   ```
 
   ```bash
@@ -30,7 +30,7 @@ Estrutura do código
 
 ```bash
 curl -s -X POST http://127.0.0.1:8080/jogo/simular \
-  -H 'Content-Type: application/json' -d '{"n":1, "seed":42}' | python -m json.tool
+  -H 'Content-Type: application/json' -d '{"n":1, "seed":42}' | python3 -m json.tool
 ```
 
 Simulação em lote (HTML legível):

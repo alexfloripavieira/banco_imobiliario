@@ -42,7 +42,7 @@ Deixe esse terminal aberto enquanto testa pelo navegador ou curl.
 
 ```bash
 curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-  -d '{"n":1,"seed":42}' http://127.0.0.1:8080/jogo/simular | python -m json.tool
+  -d '{"n":1,"seed":42}' http://127.0.0.1:8080/jogo/simular | python3 -m json.tool
 ```
 
 4) Testar simulação em lote (várias execuções)
@@ -51,7 +51,7 @@ curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json
 
 ```bash
 curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
-  -d '{"n":10,"seed":42}' http://127.0.0.1:8080/jogo/simular | python -m json.tool
+  -d '{"n":10,"seed":42}' http://127.0.0.1:8080/jogo/simular | python3 -m json.tool
 ```
 
 - Para ver uma versão legível em HTML no navegador (salva e abre automaticamente):
