@@ -6,7 +6,7 @@ import json
 import os
 import sys
 
-from src.usecases.game import simulate_games
+from src.usecases.game import simulateGames
 
 # ensure project root is on sys.path so `src` package is importable
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +20,7 @@ parser.add_argument("--seed", type=int, default=None, help="random seed")
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    res = simulate_games(n=args.n, seed=args.seed)
+    res = simulateGames(n=args.n, seed=args.seed)
     if isinstance(res, dict) and res.get("simulacoes") and res["simulacoes"] > 1:
         print("Simulações:", res["simulacoes"])
         print("Seed:", res.get("seed"))

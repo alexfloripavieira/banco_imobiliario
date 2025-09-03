@@ -8,39 +8,50 @@ from ..adapters.strategies import STRATEGIES
 from ..domain.models import Player, Property
 
 
+from ..domain.constants import (
+    BASE_PROPERTY_PRICE, BASE_RENT, BOARD_SIZE, LAP_BONUS, MAX_ROUNDS,
+    PRICE_MULTIPLIER, RENT_MULTIPLIER
+)
+
 class Game:
     def __init__(self, rng: Optional[Random] = None):
         self.board: List[Property] = []
         self.players: List[Player] = []
-        self.max_rounds = 1000
+        self.maxRounds = MAX_ROUNDS
         self.rng = rng or random.Random()
 
     def setup(self):
-        self.board = [Property(pos, 100 + pos * 10, 10 + pos * 5) for pos in range(20)]
+        self.board = [Property(pos, BASE_PROPERTY_PRICE + pos * PRICE_MULTIPLIER, BASE_RENT + pos * RENT_MULTIPLIER) for pos in range(BOARD_SIZE)]
 
-    def create_players(self):
+    def createPlayers(self):
         order = ["impulsivo", "exigente", "cauteloso", "aleatorio"]
         self.rng.shuffle(order)
         self.players = [Player(name=s, strategy=s) for s in order]
 
-    def active_players(self) -> List[Player]:
+    def getActivePlayers(self) -> List[Player]:
         return [p for p in self.players if p.active]
 
     def simulate(self) -> Tuple[str, List[str], int]:
-        self.setup()
-        self.create_players()
-        round_count = 0
+        self.initializeGame()
+        return self.runSimulation()
 
-        while round_count < self.max_rounds and len(self.active_players()) > 1:
-            round_count += 1
+    def initializeGame(self) -> None:
+        self.setup()
+        self.createPlayers()
+
+    def runSimulation(self) -> Tuple[str, List[str], int]:
+        roundCount = 0
+        
+        while roundCount < self.maxRounds and len(self.getActivePlayers()) > 1:
+            roundCount += 1
             for player in self.players:
                 if not player.active:
                     continue
 
                 steps = self.rng.randint(1, 6)
-                completed = player.move(steps, len(self.board))
+                completed = player.move(steps, BOARD_SIZE)
                 if completed:
-                    player.receive(100)
+                    player.receive(LAP_BONUS)
 
                 prop = self.board[player.position]
                 if prop.owner is None:
@@ -51,23 +62,26 @@ class Game:
                     player.pay(prop.rent)
                     prop.owner.receive(prop.rent)
                     if not player.active:
-                        player.release_properties()
+                        player.releaseProperties()
 
-                if len(self.active_players()) == 1:
+                if len(self.getActivePlayers()) == 1:
                     break
 
-        active = self.active_players()
+        return self.determineWinner(roundCount)
+
+    def determineWinner(self, roundCount: int) -> Tuple[str, List[str], int]:
+        active = self.getActivePlayers()
         if len(active) == 1:
             winner = active[0]
         else:
-            sorted_players = sorted(self.players, key=lambda p: p.balance, reverse=True)
-            winner = sorted_players[0]
+            sortedPlayers = sorted(self.players, key=lambda p: p.balance, reverse=True)
+            winner = sortedPlayers[0]
 
         ranking = sorted(self.players, key=lambda p: p.balance, reverse=True)
-        return winner.strategy, [p.strategy for p in ranking], round_count
+        return winner.strategy, [p.strategy for p in ranking], roundCount
 
 
-def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
+def simulateGames(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
     """Run n simulations and return aggregated statistics.
 
     If n == 1 returns a single-run style result similar to original API.
@@ -112,5 +126,5 @@ def simulate_games(n: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
     }
 
 
-def simulate_game() -> dict:
-    return simulate_games(1, None)
+def simulateGame() -> dict:
+    return simulateGames(1, None)
