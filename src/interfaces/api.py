@@ -11,7 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
-from ..usecases.game import simulate_games
+from ..usecases.game import simulateGames
 
 app = FastAPI()
 
@@ -99,9 +99,8 @@ async def simular(req: SimulationRequest, request: Request):
 
     Exemplo de corpo: {"n": 1000, "seed": 123}
     """
-    result = simulate_games(n=req.n, seed=req.seed)
+    result = simulateGames(n=req.n, seed=req.seed)
 
-    # negociação por header Accept
     accept = request.headers.get("accept", "")
     if "text/html" in accept:
         if isinstance(result, dict) and result.get("simulacoes", 0) > 1:

@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 
+from .constants import INITIAL_BALANCE
+
 @dataclass
 class Property:
     position: int
@@ -18,16 +20,16 @@ class Property:
 class Player:
     name: str
     strategy: str
-    balance: int = 300
+    balance: int = INITIAL_BALANCE
     position: int = 0
     properties: List[Property] = field(default_factory=list)
     active: bool = True
 
-    def move(self, steps: int, board_size: int) -> bool:
+    def move(self, steps: int, boardSize: int) -> bool:
         """Move player and return True if completed a lap"""
         prev = self.position
-        self.position = (self.position + steps) % board_size
-        return (prev + steps) >= board_size
+        self.position = (self.position + steps) % boardSize
+        return (prev + steps) >= boardSize
 
     def pay(self, amount: int) -> None:
         self.balance -= amount
@@ -42,7 +44,7 @@ class Player:
         self.properties.append(prop)
         prop.owner = self
 
-    def release_properties(self) -> None:
+    def releaseProperties(self) -> None:
         for p in list(self.properties):
             p.owner = None
         self.properties.clear()
